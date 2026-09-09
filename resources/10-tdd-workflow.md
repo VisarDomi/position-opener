@@ -237,7 +237,7 @@ The shell imports bindings, not stores. It converts browser events to Rust comma
 ## File Structure After TDD
 
 ```
-trader-svelte/
+position-opener/
 ├── business.md                              # YOU wrote this
 ├── tests/
 │   ├── trade-planning.md                    # derived from AA-AF

@@ -22,7 +22,7 @@ sudo apt install binaryen
 ### Directory Structure
 
 ```
-trader-svelte/
+position-opener/
 ├── crates/
 │   └── tendies-core/
 │       ├── Cargo.toml

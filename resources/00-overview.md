@@ -7,7 +7,7 @@ Extract all business logic, state machines, and command dispatch from TypeScript
 ## Architecture
 
 ```
-trader-svelte/
+position-opener/
 ├── crates/
 │   └── tendies-core/              # Rust → WASM
 │       ├── src/

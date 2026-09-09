@@ -3,8 +3,8 @@
 # Usage: ./scripts/dev.sh {start|stop|restart|status}
 
 PORT=${PORT:-23456}
-PID_FILE="/tmp/trader-svelte-dev.pid"
-LOG_FILE="/tmp/trader-svelte-dev.log"
+PID_FILE="/tmp/position-opener-dev.pid"
+LOG_FILE="/tmp/position-opener-dev.log"
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 start() {
