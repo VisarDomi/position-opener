@@ -1,6 +1,5 @@
 import * as API from '$lib/shared/constants/api.js';
 import * as BACKEND from '$lib/shared/constants/backend.js';
-import { getBaseUrl } from "$lib/shared/utils/helpers.js";
 import type { URL_TYPE } from "$lib/shared/types/url.js";
 import type { Account, AccountPreferences, LeverageUpdate, PreferencesUpdateResponse } from "$lib/shared/types/account.js";
 import { DEFAULT_ERROR } from "$lib/shared/constants/error.js";
@@ -13,9 +12,8 @@ export async function getAccounts(client: ApiClient): Promise<Account[]> {
 }
 
 export async function switchAccount(type: URL_TYPE, tokens: SessionTokens, accountId: string): Promise<SessionTokens> {
-    const brokerUrl = `${getBaseUrl(type)}${API.SESSION_ENDPOINT}`;
     const payload = {
-        url: brokerUrl,
+        environment: type,
         sessionTokens: tokens,
         accountId: accountId
     };
@@ -43,9 +41,8 @@ export async function updatePreferences(
     leverages: LeverageUpdate,
     hedgingMode: boolean
 ): Promise<PreferencesUpdateResponse> {
-    const brokerUrl = `${getBaseUrl(type)}${API.PREFERENCES_ENDPOINT}`;
     const payload = {
-        url: brokerUrl,
+        environment: type,
         sessionTokens: tokens,
         leverages,
         hedgingMode

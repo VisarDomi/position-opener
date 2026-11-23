@@ -1,6 +1,5 @@
 import * as API from '$lib/shared/constants/api.js';
 import * as BACKEND from '$lib/shared/constants/backend.js';
-import { getBaseUrl } from '$lib/shared/utils/helpers.js';
 import { DEFAULT_ERROR } from '$lib/shared/constants/error.js';
 import { serverLog, LogEvent } from '$lib/shared/utils/log.js';
 import type { PositionListResponse, CreatePositionResponse, TradeRequest, TradeConfirmation } from "$lib/shared/types/trading.js";
@@ -29,10 +28,9 @@ export async function updatePosition(
     dealId: string,
     updates: PositionUpdateBody
 ): Promise<CreatePositionResponse> {
-    const brokerUrl = `${getBaseUrl(type)}${API.POSITIONS_ENDPOINT}/${dealId}`;
-
     const payload = {
-        url: brokerUrl,
+        environment: type,
+        dealId: dealId,
         sessionTokens: tokens,
         data: updates
     };
