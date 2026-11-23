@@ -1,11 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-    verifyCredentials,
-    createSessionToken,
-    SESSION_COOKIE_NAME,
-    SESSION_TTL_MS
-} from '$lib/server/auth.js';
+import { verifyCredentials, setSessionCookie } from '$lib/server/auth.js';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
     const body = await request.json().catch(() => ({}));
@@ -19,13 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
         error(401, 'Invalid username or password');
     }
 
-    cookies.set(SESSION_COOKIE_NAME, createSessionToken(username), {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        maxAge: SESSION_TTL_MS / 1000
-    });
+    setSessionCookie(cookies, username);
 
     return json({ user: username });
 };

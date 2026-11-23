@@ -133,7 +133,9 @@ export function verifyCredentials(username: string, password: string): boolean {
 }
 
 /**
- * Sessions: HttpOnly `po_session` cookie, valid for 90 days.
+ * Sessions: HttpOnly `po_session` cookie, valid for 10 years and re-issued
+ * after 30 days of use (sliding renewal) — effectively indefinite for a
+ * personal PWA that is opened at least monthly.
  *
  * The token is `username:expiry:HMAC(username:expiry, key)` with the key
  * derived from the raw AUTH_USERS value. That means no separate secret to
@@ -141,10 +143,35 @@ export function verifyCredentials(username: string, password: string): boolean {
  * password invalidates every issued session.
  */
 export const SESSION_COOKIE_NAME = 'po_session';
-export const SESSION_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+export const SESSION_TTL_MS = 10 * 365 * 24 * 60 * 60 * 1000;
+const SESSION_REFRESH_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 function sessionKey(): Buffer {
     return createHash('sha256').update(env.AUTH_USERS ?? '').digest();
+}
+
+export interface SessionInfo {
+    username: string;
+    expiry: number;
+}
+
+/** True when the session is old enough that the cookie should be re-issued. */
+export function needsSessionRefresh(session: SessionInfo, now: number = Date.now()): boolean {
+    const issuedAt = session.expiry - SESSION_TTL_MS;
+    return now - issuedAt > SESSION_REFRESH_AGE_MS;
+}
+
+import type { Cookies } from '@sveltejs/kit';
+
+/** Sets (or refreshes) the session cookie. Use at login and on sliding renewal. */
+export function setSessionCookie(cookies: Cookies, username: string, now: number = Date.now()): void {
+    cookies.set(SESSION_COOKIE_NAME, createSessionToken(username, now), {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: SESSION_TTL_MS / 1000
+    });
 }
 
 export function createSessionToken(username: string, now: number = Date.now()): string {
@@ -153,7 +180,7 @@ export function createSessionToken(username: string, now: number = Date.now()): 
     return `${username}:${expiry}:${mac}`;
 }
 
-export function verifySessionToken(token: string, now: number = Date.now()): string | null {
+export function verifySessionToken(token: string, now: number = Date.now()): SessionInfo | null {
     const parts = token.split(':');
     if (parts.length !== 3) return null;
 
@@ -167,5 +194,5 @@ export function verifySessionToken(token: string, now: number = Date.now()): str
     const received = Buffer.from(mac, 'base64url');
     if (received.length !== expected.length || !timingSafeEqual(received, expected)) return null;
 
-    return username;
+    return { username, expiry };
 }

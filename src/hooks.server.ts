@@ -1,10 +1,13 @@
 import type { Handle } from '@sveltejs/kit';
-import { error, json, redirect, isHttpError } from '@sveltejs/kit';
+import { json, redirect } from '@sveltejs/kit';
+import type { SessionInfo } from '$lib/server/auth.js';
 import { getAppProfile } from '$lib/server/app-config.js';
 import {
     hasUsers,
     verifyCredentials,
     verifySessionToken,
+    needsSessionRefresh,
+    setSessionCookie,
     SESSION_COOKIE_NAME
 } from '$lib/server/auth.js';
 
@@ -78,10 +81,12 @@ export const handle: Handle = async ({ event, resolve }) => {
     const isUnlockPage = pathname === '/unlock' || pathname.startsWith('/unlock/');
 
     let user: string | undefined;
+    let sessionInfo: SessionInfo | null = null;
 
     const token = event.cookies.get(SESSION_COOKIE_NAME);
     if (token) {
-        user = verifySessionToken(token) ?? undefined;
+        sessionInfo = verifySessionToken(token);
+        user = sessionInfo?.username;
     }
 
     if (!user) {
@@ -95,6 +100,14 @@ export const handle: Handle = async ({ event, resolve }) => {
         if (isUnlockPage) {
             redirect(302, '/');
         }
+
+        // Sliding renewal: browsers cap cookie lifetimes (Chromium ~400 days),
+        // so a long-lived session is re-issued while the app is in use. The
+        // PWA only signs in again after a year of not being opened at all.
+        if (sessionInfo && needsSessionRefresh(sessionInfo)) {
+            setSessionCookie(event.cookies, sessionInfo.username);
+        }
+
         event.locals.user = user;
         return resolve(event);
     }

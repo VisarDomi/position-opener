@@ -74,7 +74,7 @@ npm run auth:hash -- your-username
 
 How you sign in:
 
-- Browsers and PWAs: an unauthenticated visit redirects to the in-app `/unlock` page. Enter username + password once; you get a 90-day HttpOnly session cookie (`po_session`). iOS standalone PWAs handle this fine, unlike native HTTP Basic prompts, which they never display.
+- Browsers and PWAs: an unauthenticated visit redirects to the in-app `/unlock` page. Enter username + password once; you get a 10-year HttpOnly session cookie (`po_session`), re-issued while the app is in use, so it is effectively indefinite. iOS standalone PWAs handle this fine, unlike native HTTP Basic prompts, which they never display.
 - `curl` and scripts: HTTP Basic auth headers still work.
 - Rotating any `AUTH_USERS` password invalidates all issued sessions (the signing key derives from the `AUTH_USERS` value).
 - **Fail closed:** in the personal profile with `AUTH_USERS` unset or malformed, the app refuses every request with 503 and logs the reason. It is never silently open.
