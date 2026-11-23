@@ -58,31 +58,28 @@ node build
 
 This repo does not ship live credentials.
 
-### App access (unlock page + session)
+### App access (reverse-proxy authentication)
 
-In the personal profile every route — pages, `/api/*` proxies, static assets — requires authentication. The user store is the `AUTH_USERS` env var; passwords are stored as scrypt hashes, never plaintext:
+The app has **no authentication code of its own**. Public deployments are gated at the reverse proxy, the same way the rest of veron3.space is: the Caddy `import authelia` snippet runs Authelia forward-auth in front of the site, and a valid Authelia SSO session is required to reach any route. Adding users means adding them in Authelia, not in this app.
 
-```
-AUTH_USERS=username:scrypt:N:r:p:salt_b64:hash_b64
-```
+- `position-opener.veron3.space` — personal instance, behind Authelia forward-auth.
+- `demo.position-opener.veron3.space` — showcase profile, deliberately public.
 
-Generate an entry with:
+Local dev (`npm run dev`) is unauthenticated by design; bind it to a trusted network. The broker-write proxies (`/api/positions`, `/api/accounts`, `/api/preferences`) derive their target URL from the request's `environment` field alone — they can only ever reach the two Capital.com hosts, so the reverse proxy decides *who* may call them, and the code decides *where* they can go.
+
+### Broker credentials
+
+For local development, you can optionally create a `.env` from `.env.example` to prefill the login form:
 
 ```bash
-npm run auth:hash -- your-username
+cp .env.example .env
 ```
 
-How you sign in:
+These values are for local development only: the app reads them only in dev, and they are empty in a production build. Do not commit `.env`, and do not use this `PUBLIC_*` autofill path as a public demo deployment strategy.
 
-- Browsers and PWAs: an unauthenticated visit redirects to the in-app `/unlock` page. Enter username + password once; you get a 10-year HttpOnly session cookie (`po_session`), re-issued while the app is in use, so it is effectively indefinite. iOS standalone PWAs handle this fine, unlike native HTTP Basic prompts, which they never display.
-- `curl` and scripts: HTTP Basic auth headers still work.
-- Rotating any `AUTH_USERS` password invalidates all issued sessions (the signing key derives from the `AUTH_USERS` value).
-- **Fail closed:** in the personal profile with `AUTH_USERS` unset or malformed, the app refuses every request with 503 and logs the reason. It is never silently open.
+### Profiles
 
-Where the env var lives:
-
-- **Local dev:** `.env` in the repo root (gitignored; see `.env.example`).
-- **`node build` deployments:** the process env only — a production build does not read `.env` files, so put `AUTH_USERS` in the service's environment (e.g. systemd `EnvironmentFile`) and restart. Omitting it makes the app fail closed on purpose.
+`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
 
 ### Broker credentials
 
@@ -109,6 +106,6 @@ iOS standalone PWA behavior is a core design target for this project. For HTTPS-
 
 ## Current status
 
-- Personal tool with HTTP Basic auth; multiple users are one `AUTH_USERS` entry away
+- Personal tool gated by Authelia at the reverse proxy; other users are an Authelia account away
 - No automated tests
 - Documentation focuses on design decisions and runtime observability
