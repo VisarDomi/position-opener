@@ -58,6 +58,28 @@ node build
 
 This repo does not ship live credentials.
 
+### App access (HTTP Basic auth)
+
+In the personal profile every route — pages, `/api/*` proxies, static assets — requires HTTP Basic auth. The user store is the `AUTH_USERS` env var; passwords are stored as scrypt hashes, never plaintext:
+
+```
+AUTH_USERS=username:scrypt:N:r:p:salt_b64:hash_b64
+```
+
+Generate an entry with:
+
+```bash
+npm run auth:hash -- your-username
+```
+
+- **Local dev:** put the entry in `.env` in the repo root (gitignored; see `.env.example`).
+- **The systemd service:** put it in `~/.config/position-opener.env`, which the unit loads via `EnvironmentFile`, then `npm run restart`.
+- **Multiple users:** comma-separate entries. No code change is needed to add or revoke one.
+- **Fail closed:** in the personal profile with `AUTH_USERS` unset or malformed, the app refuses every request with 503 and logs the reason. It is never silently open.
+- Browsers cache Basic credentials per origin, so you are prompted once per device.
+
+### Broker credentials
+
 For local development, you can optionally create a `.env` from `.env.example` to prefill the login form:
 
 ```bash
@@ -66,7 +88,9 @@ cp .env.example .env
 
 These values are for local development only: the app reads them only in dev, and they are empty in a production build. Do not commit `.env`, and do not use this `PUBLIC_*` autofill path as a public demo deployment strategy.
 
-`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
+### Profiles
+
+`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only. In showcase mode `AUTH_USERS` is not consulted.
 
 ## iPhone / PWA testing
 
@@ -79,6 +103,6 @@ iOS standalone PWA behavior is a core design target for this project. For HTTPS-
 
 ## Current status
 
-- Personal tool, not a multi-tenant product
+- Personal tool with HTTP Basic auth; multiple users are one `AUTH_USERS` entry away
 - No automated tests
 - Documentation focuses on design decisions and runtime observability

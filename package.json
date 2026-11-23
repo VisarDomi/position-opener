@@ -10,6 +10,7 @@
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "auth:hash": "node scripts/hash-password.mjs",
     "restart": "systemctl --user restart position-opener.service"
   },
   "devDependencies": {
