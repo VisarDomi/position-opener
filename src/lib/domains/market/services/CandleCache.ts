@@ -1,7 +1,7 @@
 import type { ChartCandle } from '$lib/shared/types/market.js';
 import { log } from '$lib/shared/utils/log.js';
 
-const DB_NAME = 'tendies-candle-cache';
+const DB_NAME = 'position-opener-candle-cache';
 const DB_VERSION = 1;
 const STORE_NAME = 'candles';
 
