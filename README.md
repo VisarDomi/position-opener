@@ -18,7 +18,7 @@ Tendies is a self-hosted trading PWA built around Capital.com market data and ex
 - Structured runtime telemetry: chart, viewport, resume, and trading flows emit typed logs to make production-only timing bugs diagnosable.
 - Local-first UX: the app keeps enough local state to restore quickly after reloads and intermittent mobile suspension.
 
-The architectural rationale lives in [architectural_decisions.md](./architectural_decisions.md) and [decisions.md](./decisions.md).
+The architectural rationale lives in [decisions.md](./decisions.md).
 
 ## Getting started
 
@@ -40,7 +40,7 @@ npm install
 npm run dev
 ```
 
-The Vite dev server binds to `0.0.0.0:24536`. If mkcert certificates exist under `~/.local/share/mkcert/pwa/`, HTTPS is enabled automatically for local iPhone/PWA testing.
+The Vite dev server binds to `0.0.0.0:23457`. If mkcert certificates exist under `~/.local/share/mkcert/pwa/`, HTTPS is enabled automatically for local iPhone/PWA testing.
 
 ### Build
 
@@ -64,19 +64,21 @@ For local development, you can optionally create a `.env` from `.env.example` to
 cp .env.example .env
 ```
 
-These values are for local development only. Do not commit `.env`, and do not use this `PUBLIC_*` autofill path as a public demo deployment strategy.
+These values are for local development only: the app reads them only in dev, and they are empty in a production build. Do not commit `.env`, and do not use this `PUBLIC_*` autofill path as a public demo deployment strategy.
+
+`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
 
 ## iPhone / PWA testing
 
-iOS standalone PWA behavior was a core design target for this project. For HTTPS-based local testing:
+iOS standalone PWA behavior is a core design target for this project. For HTTPS-based local testing:
 
 1. Generate a local certificate with `mkcert`.
 2. Place the generated files at `~/.local/share/mkcert/pwa/key.pem` and `~/.local/share/mkcert/pwa/cert.pem`.
 3. Start the dev server and open the app from your iPhone on the same network.
-4. If you need the mkcert root CA, the app exposes it from `/api/cert` for manual installation on the test device.
+4. If you need the mkcert root CA, the app exposes it from `/api/cert` for manual installation on the test device. The route returns 404 when `NODE_ENV` is `production`.
 
 ## Current status
 
 - Personal tool, not a multi-tenant product
-- No formal test suite yet
+- No automated tests
 - Documentation focuses on design decisions and runtime observability

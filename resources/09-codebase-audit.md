@@ -80,8 +80,8 @@ All `.svelte` files stay in Svelte. They import bindings instead of stores.
 | File | Change |
 |---|---|
 | `components/chart-engine/ChartController.ts` | Registers callback with MarketBinding |
-| `components/chart-engine/ChartEvents.ts` | Stays, converts chart clicks to commands |
-| `components/chart-engine/ChartResizer.ts` | Stays (DOM) |
+| `components/chart-engine/ChartEvents.svelte.ts` | Stays, converts chart clicks to commands |
+| `components/chart-engine/ChartResizer.svelte.ts` | Stays (DOM) |
 | `components/chart-engine/ChartCamera.ts` | Stays (chart API) |
 | `components/ui/HydrationGate.svelte` | Stays |
 | `components/ui/ToastContainer.svelte` | Stays |
@@ -94,7 +94,7 @@ All chart drawing, orchestration, and HUD components stay in JS. They interact w
 | File | Change |
 |---|---|
 | `features/chart-orchestration/ChartLogic.svelte.ts` | Uses bindings instead of stores |
-| `features/chart-orchestration/ChartLoader.ts` | Calls `marketBinding.loadHistory()` |
+| `features/chart-orchestration/ChartLoader.svelte.ts` | Calls `marketBinding.loadHistory()` |
 | `features/chart-drawings/*.ts` | Stay (lightweight-charts plugin API) |
 | `features/chart-hud/*.svelte` | Read from bindings via `$derived` |
 | `features/trade-execution/TradePopup.svelte` | Calls `validate_execution()` on confirm |
