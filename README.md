@@ -93,7 +93,7 @@ These values are for local development only: the app reads them only in dev, and
 
 ### Profiles
 
-`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only. In showcase mode `AUTH_USERS` is not consulted.
+`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
 
 ## iPhone / PWA testing
 
