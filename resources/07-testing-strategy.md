@@ -6,7 +6,7 @@ Test logic in Rust (`cargo test`), test UI/IO in JS (vitest/playwright). The WAS
 
 ## What to Test in Rust
 
-Everything that moved to `tendies-core`:
+Everything that moved to `position-opener-core`:
 
 ### 1. Trade Calculations (Unit Tests)
 
@@ -486,7 +486,7 @@ jobs:
         run: cargo install wasm-pack
 
       - name: Rust tests
-        run: cd crates/tendies-core && cargo test
+        run: cd crates/position-opener-core && cargo test
 
       - name: Build WASM
         run: npm run wasm:build

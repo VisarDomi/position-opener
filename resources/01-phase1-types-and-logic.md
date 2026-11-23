@@ -11,7 +11,7 @@ Extract all type definitions, constants, and pure calculation functions into a R
 Every TypeScript interface/type becomes a Rust struct or enum:
 
 ```rust
-// crates/tendies-core/src/types/instrument.rs
+// crates/position-opener-core/src/types/instrument.rs
 
 use wasm_bindgen::prelude::*;
 
@@ -57,7 +57,7 @@ impl InstrumentSpec {
 ```
 
 ```rust
-// crates/tendies-core/src/types/candle.rs
+// crates/position-opener-core/src/types/candle.rs
 
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug)]
@@ -79,7 +79,7 @@ impl Candle {
 ```
 
 ```rust
-// crates/tendies-core/src/types/price.rs
+// crates/position-opener-core/src/types/price.rs
 
 #[wasm_bindgen]
 #[derive(Clone, Copy, Debug)]
@@ -99,7 +99,7 @@ pub enum ChartDataSource {
 ### Constants (from `src/lib/shared/constants/`)
 
 ```rust
-// crates/tendies-core/src/types/constants.rs
+// crates/position-opener-core/src/types/constants.rs
 
 // Trading constants
 pub const MAX_LEVERAGE: u8 = 10;
@@ -123,7 +123,7 @@ pub fn default_slippage_tolerance() -> f64 { DEFAULT_SLIPPAGE_TOLERANCE }
 ### TradePlanner (from `src/lib/features/trade-execution/TradePlanner.ts`)
 
 ```rust
-// crates/tendies-core/src/trade/planner.rs
+// crates/position-opener-core/src/trade/planner.rs
 
 use wasm_bindgen::prelude::*;
 use crate::types::{Direction, InstrumentSpec};
@@ -223,7 +223,7 @@ fn clamp_to_lot_size(size: f64, lot_size: f64, min_size: f64) -> f64 {
 ### RiskManager (from `src/lib/domains/trading/domain/RiskManager.ts`)
 
 ```rust
-// crates/tendies-core/src/trade/risk.rs
+// crates/position-opener-core/src/trade/risk.rs
 
 use wasm_bindgen::prelude::*;
 use crate::types::Direction;
@@ -285,10 +285,10 @@ pub fn calculate_risk_based_stop(
 ## Cargo.toml
 
 ```toml
-# crates/tendies-core/Cargo.toml
+# crates/position-opener-core/Cargo.toml
 
 [package]
-name = "tendies-core"
+name = "position-opener-core"
 version = "0.1.0"
 edition = "2021"
 
@@ -326,7 +326,7 @@ import init, {
     type PlannedTrade,
     type RiskAssessment,
     type TradeError,
-} from '$lib/wasm/tendies_core';
+} from '$lib/wasm/position_opener_core';
 
 // Initialize WASM once at app boot
 let initialized = false;
@@ -354,7 +354,7 @@ export function planTrade(
 
 ## Migration Checklist
 
-- [ ] Create `crates/tendies-core/` with `Cargo.toml`
+- [ ] Create `crates/position-opener-core/` with `Cargo.toml`
 - [ ] Port all types from `src/lib/shared/types/` to `src/types/`
 - [ ] Port all constants from `src/lib/shared/constants/` to `src/types/constants.rs`
 - [ ] Port `TradePlanner.ts` → `src/trade/planner.rs`

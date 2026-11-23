@@ -6,7 +6,7 @@
 
 business.md is the single source of truth. Everything — test specs, test code, implementation — derives from it. Starting without it means the LLM will invent requirements or reverse-engineer them from existing code, which defeats the purpose.
 
-Write business.md yourself, from your domain knowledge and experience running Tendies. The LLM should not write it — it doesn't know what burned you in production, which edge cases cost money, or which behaviors are intentional vs accidental.
+Write business.md yourself, from your domain knowledge and experience running Position Opener. The LLM should not write it — it doesn't know what burned you in production, which edge cases cost money, or which behaviors are intentional vs accidental.
 
 ## The Hierarchy
 
@@ -136,11 +136,11 @@ Every test spec maps to either Rust or JS based on what it tests:
 
 | Tests for... | Language | File location |
 |---|---|---|
-| Trade calculations | Rust | `crates/tendies-core/tests/trade_planning.rs` |
-| State machine transitions | Rust | `crates/tendies-core/tests/market_state.rs` |
-| Engine lifecycle | Rust | `crates/tendies-core/tests/engine.rs` |
-| Validation guards | Rust | `crates/tendies-core/tests/execution.rs` |
-| P&L calculation | Rust | `crates/tendies-core/tests/position.rs` |
+| Trade calculations | Rust | `crates/position-opener-core/tests/trade_planning.rs` |
+| State machine transitions | Rust | `crates/position-opener-core/tests/market_state.rs` |
+| Engine lifecycle | Rust | `crates/position-opener-core/tests/engine.rs` |
+| Validation guards | Rust | `crates/position-opener-core/tests/execution.rs` |
+| P&L calculation | Rust | `crates/position-opener-core/tests/position.rs` |
 | Binding mirrors state correctly | TypeScript | `src/lib/bindings/__tests__/market.test.ts` |
 | Chart callback fires on effect | TypeScript | `src/lib/bindings/__tests__/market.test.ts` |
 | WASM init + boot sequence | TypeScript | `src/lib/bindings/__tests__/engine.test.ts` |
@@ -183,7 +183,7 @@ This prevents the LLM from writing tests that confirm existing behavior instead 
 After generating test code, run:
 
 ```bash
-cd crates/tendies-core && cargo test    # all fail (no implementation)
+cd crates/position-opener-core && cargo test    # all fail (no implementation)
 npx vitest run                           # all fail (no bindings)
 ```
 
@@ -247,7 +247,7 @@ position-opener/
 │   ├── position-management.md               # derived from BB-BF
 │   └── account-management.md                # derived from BG-BK
 ├── crates/
-│   └── tendies-core/
+│   └── position-opener-core/
 │       ├── src/                             # implementation (makes tests pass)
 │       │   ├── trade/
 │       │   ├── market/
@@ -290,7 +290,7 @@ After business.md exists, update the project's CLAUDE.md to enforce the hierarch
 
 1. `business.md` (source of truth — only Visar edits this)
 2. `tests/*.md` (contracts derived from business.md)
-3. `crates/tendies-core/tests/*.rs` + `src/lib/bindings/__tests__/*.test.ts`
+3. `crates/position-opener-core/tests/*.rs` + `src/lib/bindings/__tests__/*.test.ts`
 4. Implementation code
 
 A test only changes if a business rule changes.

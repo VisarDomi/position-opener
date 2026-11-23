@@ -38,7 +38,7 @@
     <div class="login-stage">
         <div class="hero">
             <div class="eyebrow">{showcase ? 'SHOWCASE PROFILE' : 'PERSONAL PROFILE'}</div>
-            <h1>Moon Tendies</h1>
+            <h1>Position Opener</h1>
             <p class="lead">
                 {#if showcase}
                     Private demo route with server-owned demo auth and the same chart/runtime behavior used in the main app.
@@ -67,7 +67,7 @@
                 </button>
             {:else}
                 <p class="copy">
-                    Sign in with your Capital.com credentials to enter the app. Tendies keeps demo selected by default for trading.
+                    Sign in with your Capital.com credentials to enter the app. Position Opener keeps demo selected by default for trading.
                 </p>
 
                 <label class="field">

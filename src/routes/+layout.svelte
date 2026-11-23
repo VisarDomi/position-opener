@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-    <title>Moon Tendies</title>
+    <title>Position Opener</title>
 </svelte:head>
 
 <HydrationGate>

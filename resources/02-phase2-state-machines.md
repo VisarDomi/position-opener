@@ -58,7 +58,7 @@ export class MarketStore extends BaseStore {
 ### Rust Replacement
 
 ```rust
-// crates/tendies-core/src/market/commands.rs
+// crates/position-opener-core/src/market/commands.rs
 
 #[derive(Debug)]
 pub enum MarketCommand {
@@ -70,7 +70,7 @@ pub enum MarketCommand {
 ```
 
 ```rust
-// crates/tendies-core/src/market/state.rs
+// crates/position-opener-core/src/market/state.rs
 
 use wasm_bindgen::prelude::*;
 use crate::types::{Candle, ChartDataSource};
@@ -239,7 +239,7 @@ impl MarketState {
 
 ```typescript
 // src/lib/bindings/market.svelte.ts
-import { MarketState, MarketEffect, ChartDataSource } from '$lib/wasm/tendies_core';
+import { MarketState, MarketEffect, ChartDataSource } from '$lib/wasm/position_opener_core';
 
 class MarketBinding {
     private core: MarketState;
@@ -312,7 +312,7 @@ export const marketBinding = new MarketBinding(60); // 1-minute candles
 ### Rust
 
 ```rust
-// crates/tendies-core/src/position/commands.rs
+// crates/position-opener-core/src/position/commands.rs
 
 pub enum PositionCommand {
     SetFromTrade(PositionData),
@@ -329,7 +329,7 @@ pub enum PositionEffect {
 ```
 
 ```rust
-// crates/tendies-core/src/position/state.rs
+// crates/position-opener-core/src/position/state.rs
 
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
@@ -407,7 +407,7 @@ impl PositionState {
 
 ```typescript
 // src/lib/bindings/position.svelte.ts
-import { PositionState } from '$lib/wasm/tendies_core';
+import { PositionState } from '$lib/wasm/position_opener_core';
 
 class PositionBinding {
     private core = new PositionState();
@@ -450,7 +450,7 @@ export const positionBinding = new PositionBinding();
 ### Rust
 
 ```rust
-// crates/tendies-core/src/account/state.rs
+// crates/position-opener-core/src/account/state.rs
 
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};

@@ -28,7 +28,7 @@ A developer can:
 ## The Typestate Solution
 
 ```rust
-// crates/tendies-core/src/trade/executor.rs
+// crates/position-opener-core/src/trade/executor.rs
 
 use wasm_bindgen::prelude::*;
 use crate::engine::EnginePhase;
@@ -153,7 +153,7 @@ import {
     ExecutionReady,
     ExecutionError,
     EnginePhase,
-} from '$lib/wasm/tendies_core';
+} from '$lib/wasm/position_opener_core';
 
 export async function executeTrade(
     enginePhase: EnginePhase,

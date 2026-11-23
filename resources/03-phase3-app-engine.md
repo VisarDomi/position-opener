@@ -17,7 +17,7 @@ These are bugs that only surface under specific timing conditions (iOS backgroun
 ## Rust State Machine
 
 ```rust
-// crates/tendies-core/src/engine/state.rs
+// crates/position-opener-core/src/engine/state.rs
 
 use wasm_bindgen::prelude::*;
 
@@ -239,7 +239,7 @@ import {
     EngineCommand,
     EngineEffect,
     EnginePhase,
-} from '$lib/wasm/tendies_core';
+} from '$lib/wasm/position_opener_core';
 import { bus } from '$lib/core/events/globalBus';
 
 class EngineBinding {

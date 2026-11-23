@@ -1,4 +1,4 @@
-# Tendies Rust/WASM Migration — Overview
+# Position Opener Rust/WASM Migration — Overview
 
 ## Vision
 
@@ -9,7 +9,7 @@ Extract all business logic, state machines, and command dispatch from TypeScript
 ```
 position-opener/
 ├── crates/
-│   └── tendies-core/              # Rust → WASM
+│   └── position-opener-core/              # Rust → WASM
 │       ├── src/
 │       │   ├── lib.rs             # wasm_bindgen entry, init()
 │       │   ├── trade/             # TradePlanner, RiskManager, TradeCalculator
@@ -50,7 +50,7 @@ position-opener/
 │       └── pkg/                   # wasm-pack output (auto-generated .d.ts + .wasm)
 ├── src/
 │   └── lib/
-│       ├── wasm/                  # Symlink or copy of crates/tendies-core/pkg/
+│       ├── wasm/                  # Symlink or copy of crates/position-opener-core/pkg/
 │       ├── bindings/              # Thin Svelte ↔ WASM bridge
 │       │   ├── market.svelte.ts   # Mirrors Rust MarketState → $state
 │       │   ├── trade.svelte.ts    # Mirrors Rust TradeState → $state

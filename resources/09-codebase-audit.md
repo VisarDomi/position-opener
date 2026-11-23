@@ -117,7 +117,7 @@ All chart drawing, orchestration, and HUD components stay in JS. They interact w
 ## File Count After Migration
 
 ```
-New Rust files:     ~15 (in crates/tendies-core/src/)
+New Rust files:     ~15 (in crates/position-opener-core/src/)
 New binding files:  ~5  (in src/lib/bindings/)
 New adapter files:  ~2  (BrowserEventAdapter, EventWiring)
 Deleted TS files:   ~22 (replaced by Rust + bindings)

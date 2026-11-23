@@ -24,7 +24,7 @@ sudo apt install binaryen
 ```
 position-opener/
 ├── crates/
-│   └── tendies-core/
+│   └── position-opener-core/
 │       ├── Cargo.toml
 │       ├── src/
 │       │   └── lib.rs
@@ -32,9 +32,9 @@ position-opener/
 ├── src/
 │   └── lib/
 │       └── wasm/          # wasm-pack output lands here
-│           ├── tendies_core.js
-│           ├── tendies_core.d.ts
-│           ├── tendies_core_bg.wasm
+│           ├── position_opener_core.js
+│           ├── position_opener_core.d.ts
+│           ├── position_opener_core_bg.wasm
 │           └── package.json
 ├── package.json
 ├── vite.config.ts
@@ -45,7 +45,7 @@ position-opener/
 
 ```toml
 [package]
-name = "tendies-core"
+name = "position-opener-core"
 version = "0.1.0"
 edition = "2021"
 
@@ -80,7 +80,7 @@ panic = "abort"       # Smaller panic handling (no unwinding)
 ### lib.rs Entry Point
 
 ```rust
-// crates/tendies-core/src/lib.rs
+// crates/position-opener-core/src/lib.rs
 
 use wasm_bindgen::prelude::*;
 
@@ -117,15 +117,15 @@ pub use types::*;
 ```json
 {
   "scripts": {
-    "wasm:build": "wasm-pack build crates/tendies-core --target web --out-dir ../../src/lib/wasm --out-name tendies_core",
-    "wasm:build:dev": "wasm-pack build crates/tendies-core --target web --dev --out-dir ../../src/lib/wasm --out-name tendies_core",
-    "wasm:watch": "cargo watch -w crates/tendies-core/src -s 'npm run wasm:build:dev'",
+    "wasm:build": "wasm-pack build crates/position-opener-core --target web --out-dir ../../src/lib/wasm --out-name position_opener_core",
+    "wasm:build:dev": "wasm-pack build crates/position-opener-core --target web --dev --out-dir ../../src/lib/wasm --out-name position_opener_core",
+    "wasm:watch": "cargo watch -w crates/position-opener-core/src -s 'npm run wasm:build:dev'",
     "dev": "npm run wasm:build:dev && vite dev",
     "build": "npm run wasm:build && vite build",
     "preview": "npm run wasm:build && vite preview",
     "check": "npm run wasm:build && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "test:rust": "cd crates/tendies-core && cargo test",
-    "test:rust:watch": "cd crates/tendies-core && cargo watch -x test"
+    "test:rust": "cd crates/position-opener-core && cargo test",
+    "test:rust:watch": "cd crates/position-opener-core && cargo watch -x test"
   }
 }
 ```
@@ -137,7 +137,7 @@ pub use types::*;
 | `--target web` | Produces ES module output (compatible with Vite) |
 | `--dev` | Debug build, no optimizations (faster compile, ~2s) |
 | `--out-dir ../../src/lib/wasm` | Output into SvelteKit's importable path |
-| `--out-name tendies_core` | Controls output filenames |
+| `--out-name position_opener_core` | Controls output filenames |
 
 **Do NOT use `--target bundler`** — it produces CommonJS-style imports that require a bundler plugin. `--target web` works natively with Vite's ES module handling.
 
@@ -165,7 +165,7 @@ export default defineConfig({
     },
     // WASM support
     optimizeDeps: {
-        exclude: ['tendies-core'], // Don't pre-bundle WASM
+        exclude: ['position-opener-core'], // Don't pre-bundle WASM
     },
     build: {
         target: 'esnext', // Required for top-level await (WASM init)
@@ -183,7 +183,7 @@ No changes needed to `svelte.config.js`. The WASM files in `src/lib/wasm/` are t
 
 ```typescript
 // src/lib/wasm/init.ts
-import init from '$lib/wasm/tendies_core';
+import init from '$lib/wasm/position_opener_core';
 
 let initialized = false;
 let initPromise: Promise<void> | null = null;
@@ -245,7 +245,7 @@ npm run wasm:watch
 npm run dev
 ```
 
-`cargo-watch` watches `crates/tendies-core/src/` and re-runs `wasm-pack build` on any change. Vite detects the updated `.js`/`.wasm` files in `src/lib/wasm/` and triggers HMR.
+`cargo-watch` watches `crates/position-opener-core/src/` and re-runs `wasm-pack build` on any change. Vite detects the updated `.js`/`.wasm` files in `src/lib/wasm/` and triggers HMR.
 
 **Incremental compile time (dev):** ~2-4 seconds for Rust changes.
 **Vite HMR after WASM rebuild:** <500ms.
@@ -276,12 +276,12 @@ This runs:
 
 | Component | Size (gzipped) |
 |---|---|
-| WASM binary (tendies_core_bg.wasm) | ~30-80 KB |
-| JS glue (tendies_core.js) | ~2-5 KB |
+| WASM binary (position_opener_core_bg.wasm) | ~30-80 KB |
+| JS glue (position_opener_core.js) | ~2-5 KB |
 | Svelte app (existing) | ~50-150 KB |
 | **Total** | ~80-235 KB |
 
-The WASM binary is small because tendies-core is pure logic — no heavy crates like `regex`, `chrono`, or `tokio`. Just math, enums, and state machines.
+The WASM binary is small because position-opener-core is pure logic — no heavy crates like `regex`, `chrono`, or `tokio`. Just math, enums, and state machines.
 
 ## .gitignore Additions
 
@@ -290,8 +290,8 @@ The WASM binary is small because tendies-core is pure logic — no heavy crates 
 src/lib/wasm/
 
 # Rust build artifacts
-crates/tendies-core/target/
-crates/tendies-core/pkg/
+crates/position-opener-core/target/
+crates/position-opener-core/pkg/
 ```
 
 **Note:** Do NOT commit `src/lib/wasm/` — it's generated output. CI/CD should run `npm run wasm:build` before `npm run build`.
@@ -304,7 +304,7 @@ The `wasm-bindgen` CLI version must match the crate version exactly:
 
 ```bash
 # Check crate version
-grep wasm-bindgen crates/tendies-core/Cargo.toml
+grep wasm-bindgen crates/position-opener-core/Cargo.toml
 
 # Check CLI version
 wasm-bindgen --version
@@ -315,7 +315,7 @@ cargo install wasm-bindgen-cli --version 0.2.XXX
 
 Or let `wasm-pack` manage it (it downloads the correct version automatically).
 
-### "Cannot find module '$lib/wasm/tendies_core'"
+### "Cannot find module '$lib/wasm/position_opener_core'"
 
 Run `npm run wasm:build:dev` — the output files don't exist yet.
 
@@ -332,7 +332,7 @@ Check which crates are pulling in heavy dependencies:
 cargo install cargo-bloat
 
 # Analyze binary
-cd crates/tendies-core
+cd crates/position-opener-core
 cargo bloat --release --target wasm32-unknown-unknown -n 20
 ```
 

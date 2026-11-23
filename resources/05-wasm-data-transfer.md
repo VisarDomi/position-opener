@@ -259,7 +259,7 @@ load_instrument(JSON.stringify(instrument));
 | Indexed access | N per batch | None | Minimal | Bulk reads (safe) |
 | Serde JSON | 1 per object | ~0.1-1ms | Full copy | Complex structs with strings |
 
-## Decision Matrix for Tendies
+## Decision Matrix for Position Opener
 
 ```
 WebSocket tick (bid, ask)

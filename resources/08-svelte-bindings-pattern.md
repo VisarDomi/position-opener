@@ -15,7 +15,7 @@ A binding does NOT contain business logic. If you're writing an `if` statement t
 ```typescript
 // src/lib/bindings/[domain].svelte.ts
 
-import { SomeState, SomeEffect } from '$lib/wasm/tendies_core';
+import { SomeState, SomeEffect } from '$lib/wasm/position_opener_core';
 
 class SomeBinding {
     // 1. Private Rust core — not reactive, not exposed
@@ -225,7 +225,7 @@ export function wireEvents() {
 ```typescript
 // src/lib/bindings/position.svelte.ts
 
-import { PositionState } from '$lib/wasm/tendies_core';
+import { PositionState } from '$lib/wasm/position_opener_core';
 
 class PositionBinding {
     private core = new PositionState();
