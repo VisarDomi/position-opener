@@ -12,11 +12,18 @@
 
     const fullscreen = $derived($page.route?.id === '/chart');
 
+    // The unlock page is a standalone gate: no service worker, no engine boot.
+    // Leaving it happens via a full page load (window.location.replace), which
+    // remounts the layout and boots the app normally.
+    const isUnlock = $derived($page.route?.id === '/unlock');
+
     function preventZoom(e: Event) {
         e.preventDefault();
     }
 
     onMount(() => {
+        if (isUnlock) return;
+
         setRuntimeAppProfile(data.appProfile);
 
         if ('serviceWorker' in navigator) {

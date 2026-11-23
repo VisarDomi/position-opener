@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { scryptSync, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, scryptSync, timingSafeEqual } from 'node:crypto';
 
 /**
  * AUTH_USERS holds comma-separated credential entries:
@@ -130,4 +130,42 @@ export function verifyCredentials(username: string, password: string): boolean {
 
     cacheVerified(key);
     return true;
+}
+
+/**
+ * Sessions: HttpOnly `po_session` cookie, valid for 90 days.
+ *
+ * The token is `username:expiry:HMAC(username:expiry, key)` with the key
+ * derived from the raw AUTH_USERS value. That means no separate secret to
+ * manage, tokens stay valid across service restarts, and rotating any user's
+ * password invalidates every issued session.
+ */
+export const SESSION_COOKIE_NAME = 'po_session';
+export const SESSION_TTL_MS = 90 * 24 * 60 * 60 * 1000;
+
+function sessionKey(): Buffer {
+    return createHash('sha256').update(env.AUTH_USERS ?? '').digest();
+}
+
+export function createSessionToken(username: string, now: number = Date.now()): string {
+    const expiry = now + SESSION_TTL_MS;
+    const mac = createHmac('sha256', sessionKey()).update(`${username}:${expiry}`).digest('base64url');
+    return `${username}:${expiry}:${mac}`;
+}
+
+export function verifySessionToken(token: string, now: number = Date.now()): string | null {
+    const parts = token.split(':');
+    if (parts.length !== 3) return null;
+
+    const [username, expiryStr, mac] = parts;
+    if (!USERNAME_PATTERN.test(username)) return null;
+
+    const expiry = Number(expiryStr);
+    if (!Number.isInteger(expiry) || expiry < now) return null;
+
+    const expected = createHmac('sha256', sessionKey()).update(`${username}:${expiry}`).digest();
+    const received = Buffer.from(mac, 'base64url');
+    if (received.length !== expected.length || !timingSafeEqual(received, expected)) return null;
+
+    return username;
 }
