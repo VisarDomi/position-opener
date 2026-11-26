@@ -2,6 +2,7 @@ import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import * as API from '$lib/shared/constants/api.js';
 import { getBrokerBaseUrl, areValidSessionTokens } from '$lib/shared/utils/helpers.js';
+import { getAppProfile, getShowcaseAccountId } from '$lib/server/app-config.js';
 
 export const PUT: RequestHandler = async ({ request }) => {
     const body = await request.json();
@@ -23,6 +24,11 @@ export const PUT: RequestHandler = async ({ request }) => {
 
     if (typeof accountId !== 'string' || !accountId) {
         error(400, "Missing required parameters");
+    }
+
+    // The showcase may only ever sit on its own demo account.
+    if (getAppProfile() === 'showcase' && accountId !== getShowcaseAccountId()) {
+        error(403, "The showcase is limited to its own demo account");
     }
 
     const targetUrl = `${baseUrl}${API.SESSION_ENDPOINT}`;

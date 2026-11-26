@@ -15,6 +15,12 @@ import type { SessionTokens } from '$lib/shared/types/auth.js';
 import { log } from '$lib/shared/utils/log.js';
 import { getDefaultMode, isShowcaseProfile } from '$lib/core/config/runtime.js';
 
+// The showcase shows and uses its own demo account only; the login's other
+// accounts belong to other apps.
+function usableAccounts(list: Account[]): Account[] {
+    return isShowcaseProfile() ? list.filter(a => a.accountName === AUTH.SHOWCASE_ACCOUNT_NAME) : list;
+}
+
 export class AccountStore extends BaseStore {
     activeAccount = $state<Account | null>(null);
     realAccounts = $state<Account[]>([]);
@@ -80,7 +86,7 @@ export class AccountStore extends BaseStore {
             }
 
             try {
-                const demo = await getAccounts(demoClient);
+                const demo = usableAccounts(await getAccounts(demoClient));
                 this.realAccounts = [];
                 this.demoAccounts = demo;
                 await this.resolveSourceOfTruth();
@@ -128,7 +134,7 @@ export class AccountStore extends BaseStore {
         if (!client) return;
 
         try {
-            const list = await getAccounts(client);
+            const list = usableAccounts(await getAccounts(client));
             if (mode === AUTH.REAL_TYPE) this.realAccounts = list;
             else this.demoAccounts = list;
 

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Runs demo-link.mjs on the showcase server over SSH. Same arguments:
+#   scripts/demo-link new "BuildQ" --days 30
+#   scripts/demo-link list
+#   scripts/demo-link revoke <id>
+set -euo pipefail
+SERVER="${DEMO_LINK_SERVER:-erdal@157.90.28.14}"
+exec ssh "$SERVER" "node - $(printf '%q ' "$@")" < "$(dirname "$0")/demo-link.mjs"

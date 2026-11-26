@@ -2,7 +2,7 @@
 
 Position Opener is a self-hosted trading PWA built around Capital.com market data and execution. It is optimized for mobile Safari and standalone iOS PWA use, with real-time charting, position planning, background-resume handling, and a custom chart orchestration layer on top of TradingView Lightweight Charts.
 
-**Live demo:** [demo.position-opener.veron3.space](https://demo.position-opener.veron3.space). It signs in to a Capital.com demo account by itself. Best on an iPhone.
+**Live demo:** private, by personal link. [demo.position-opener.veron3.space](https://demo.position-opener.veron3.space) says how to ask for one. With a link it signs in to a Capital.com demo account by itself. Best on an iPhone.
 
 ## Stack
 
@@ -60,14 +60,12 @@ node build
 
 This repo does not ship live credentials.
 
-### App access (reverse-proxy authentication)
+### App access
 
-The app has **no authentication code of its own**. Public deployments are gated at the reverse proxy, the same way the rest of veron3.space is: the Caddy `import authelia` snippet runs Authelia forward-auth in front of the site, and a valid Authelia SSO session is required to reach any route. Adding users means adding them in Authelia, not in this app.
+- `position-opener.veron3.space` — personal instance. The app has no authentication code for it: the Caddy `import authelia` snippet runs Authelia forward-auth in front of the site, as for the rest of veron3.space, and a valid Authelia SSO session is required to reach any route.
+- `demo.position-opener.veron3.space` — showcase profile, open only through an access link (below). Without a valid link every page shows a short "private demo" page with a contact address, and every `/api/*` route answers 401.
 
-- `position-opener.veron3.space` — personal instance, behind Authelia forward-auth.
-- `demo.position-opener.veron3.space` — showcase profile, deliberately public.
-
-Local dev (`npm run dev`) is unauthenticated by design; bind it to a trusted network. The broker-write proxies (`/api/positions`, `/api/accounts`, `/api/preferences`) derive their target URL from the request's `environment` field alone — they can only ever reach the two Capital.com hosts, so the reverse proxy decides *who* may call them, and the code decides *where* they can go.
+Local dev (`npm run dev`) is unauthenticated by design; bind it to a trusted network. The broker-write proxies (`/api/positions`, `/api/accounts`, `/api/preferences`) derive their target URL from the request's `environment` field alone — they can only ever reach the two Capital.com hosts, so the gate in front decides *who* may call them, and the code decides *where* they can go.
 
 ### Broker credentials
 
@@ -81,21 +79,23 @@ These values are for local development only: the app reads them only in dev, and
 
 ### Profiles
 
-`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
+`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile logs in to the demo API on the server with the `SHOWCASE_*` credentials and returns only the session tokens to the client; it allows demo mode only.
 
-### Broker credentials
+The showcase trades on one demo account, **Visi** (`SHOWCASE_ACCOUNT_NAME`). The login's other demo accounts, "Arena 01" … "Arena 09", belong to [Trader](https://github.com/VisarDomi/trader), which shares the login. After login the server switches the session to Visi with `PUT /session` and checks it with `GET /session`; if Visi is missing or the switch does not stick, the showcase refuses to start rather than use another account. The client lists only Visi, and `/api/accounts` refuses any other account id.
 
-For local development, you can optionally create a `.env` from `.env.example` to prefill the login form:
+## Demo links
+
+Each person gets their own link: `https://demo.position-opener.veron3.space/?key=…`. The key is 32 random bytes. The server stores only its SHA-256 with a label, a creation date, an optional expiry and a revocation date, in `DEMO_ACCESS_FILE` (`/home/erdal/position-opener-showcase-access/links.json` on the server, mode 600; set in `/etc/veron3-apps/position-opener-showcase-1.env`). Opening the link sets an HttpOnly cookie and redirects to the same page without the key, so the key does not stay in the address bar, history or Referer headers. Each request checks the cookie against the store, so revoking a link closes it at once. A link is not single-use: email scanners and link previews may open it first.
+
+Run from this repository on the PC (it runs `scripts/demo-link.mjs` on the server over SSH):
 
 ```bash
-cp .env.example .env
+scripts/demo-link new "BuildQ" --days 30   # prints the link; omit --days for no expiry
+scripts/demo-link list                     # id, status, created, expiry, label
+scripts/demo-link revoke <id>              # the link stops working at once
 ```
 
-These values are for local development only: the app reads them only in dev, and they are empty in a production build. Do not commit `.env`, and do not use this `PUBLIC_*` autofill path as a public demo deployment strategy.
-
-### Profiles
-
-`APP_PROFILE` selects the deployment profile: `personal` (the default) or `showcase`. The showcase profile is public by design: it logs in to the demo API on the server with the `SHOWCASE_*` credentials, returns only the session tokens to the client, and allows demo mode only.
+A lost link cannot be shown again (only its hash is stored): revoke it and make a new one.
 
 ## iPhone / PWA testing
 
@@ -109,5 +109,5 @@ iOS standalone PWA behavior is a core design target for this project. For HTTPS-
 ## Current status
 
 - Personal tool gated by Authelia at the reverse proxy; other users are an Authelia account away
-- No automated tests
+- Unit tests (`npm test`) cover only the showcase access links and the Visi account lock; the trading app has none
 - Documentation focuses on design decisions and runtime observability
