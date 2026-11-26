@@ -2,6 +2,8 @@
 
 Position Opener is a self-hosted trading PWA built around Capital.com market data and execution. It is optimized for mobile Safari and standalone iOS PWA use, with real-time charting, position planning, background-resume handling, and a custom chart orchestration layer on top of TradingView Lightweight Charts.
 
+**Live demo:** [demo.position-opener.veron3.space](https://demo.position-opener.veron3.space). It signs in to a Capital.com demo account by itself. Best on an iPhone.
+
 ## Stack
 
 - SvelteKit 2
